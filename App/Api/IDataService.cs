@@ -5,7 +5,9 @@ namespace App.Api;
 
 public interface IDataService
 {
-    bool CheckForJsonDataFile();
+    bool JsonDataDirectoryExists();
+    void CreateJsonDataDirectory();
+    bool JsonDataFileExists();
     void CreateJsonDataFile();
     int GetMaxFriendId();
     FriendDTO CreateFriend(FriendDTO newFriend);
