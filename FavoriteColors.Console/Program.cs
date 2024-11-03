@@ -65,19 +65,19 @@ void RunUI()
     {
         char[] validInputs = ['1', '2', '3', 'x', 'X'];
         char userInput = '0';
-        bool isFirstRun = false;
+        bool isFirstRun = true;
         while (!validInputs.Contains(userInput))
         {
             if (!isFirstRun)
             {
-                isFirstRun = true;
-                Console.WriteLine("Error: Invalid menu selection.\n");
+                Console.WriteLine("\nError: Invalid menu selection.\n");
             }
 
             ShowMainMenu();
             Console.WriteLine("\nEnter your menu selection, a digit between one(1) and three(3), or X to quit...\n");
             ConsoleKeyInfo key = Console.ReadKey();
             userInput = key.KeyChar;
+            isFirstRun = false;
         }
         return userInput;
     }
@@ -104,28 +104,27 @@ void RunUI()
         void GoToAddFriend()
         {
             string firstName = string.Empty;
-            bool isFirstRunName = false;
+            bool isFirstRunName = true;
             while (!IsValidFirstName(firstName))
             {
                 if (!isFirstRunName)
                 {
-                    isFirstRunName = true;
                     Console.WriteLine("\nError: first name input is invalid.\nFirst name must be between one(1) and one hundred(100) characters in length.");
                 }
                 Console.WriteLine("\nEnter friend's first name:\n");
                 firstName = Console.ReadLine() ?? string.Empty;
+                isFirstRunName = false;
             }
 
             string favColor = string.Empty;
-            bool isFirstRunColor = false;
-            while (!ConsoleColor.GetNames<ConsoleColor>().Contains(favColor))
+            bool isFirstRunColor = true;
+            while (!Enum.GetNames<ConsoleColor>().Select(c => c.ToLowerInvariant()).Contains(favColor.ToLowerInvariant()))
             {
                 if (!isFirstRunColor)
                 {
-                    isFirstRunColor = true;
                     Console.WriteLine("\nError: color input is invalid.");
                 }
-                Console.WriteLine("\nWhat is your friend's favotite color? Choose from these colors:\n");
+                Console.WriteLine("\nWhat is your friend's favorite color? Choose from these colors:\n");
                 List<ConsoleColor> availableColors = new((ConsoleColor[])Enum.GetValues(typeof(ConsoleColor)));
                 availableColors.Remove(ConsoleColor.Black);
 
@@ -137,6 +136,7 @@ void RunUI()
                     Console.ForegroundColor = ConsoleColor.White;
                 }
                 favColor = Console.ReadLine() ?? string.Empty;
+                isFirstRunColor = false;
             }
 
             AddFriend(firstName, favColor);
@@ -146,16 +146,16 @@ void RunUI()
         void GoToSearchForFriends()
         {
             string searchTerm = string.Empty;
-            bool isFirstRun = false;
+            bool isFirstRun = true;
             while (!IsValidSearchTerm(searchTerm))
             {
                 if (!isFirstRun)
                 {
-                    isFirstRun = true;
                     Console.WriteLine("\nError: Invalid search characters. Search characters must be fewer than one hundred(100).");
                 }
                 Console.WriteLine("\nEnter search characters:\n");
                 searchTerm = Console.ReadLine() ?? string.Empty;
+                isFirstRun = false;
             }
 
             Friend[] foundFriends = SearchFriends(searchTerm);
@@ -174,6 +174,7 @@ void RunUI()
         {
             if (AllFriends.Count > 0)
             {
+                Console.WriteLine("\nALL FRIENDS\n");
                 DisplayFriends(GetAllFriends());
             }
             else
@@ -190,10 +191,12 @@ void RunUI()
 
             uint nextFriendId = AllFriends.Count > 0 ? AllFriends.Select(f => f.Id).Max() + 1 : 1;
             AllFriends.Add(new() { Id = nextFriendId, FirstName = firstName, FavoriteColor = c });
+
+            Console.WriteLine("\nFriend added sucessfully!!");
         }
         void DisplayFriends(IEnumerable<Friend> friendsToDisplay)
         {
-            Console.Write("\nFirst Name\t");
+            Console.Write("\n\nFirst Name\t");
             Console.Write("Favorite Color\n\n");
             foreach (Friend friend in friendsToDisplay)
             {
