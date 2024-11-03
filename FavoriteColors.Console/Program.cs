@@ -1,7 +1,5 @@
 ﻿
 using FavoriteColors.Console.Models;
-using Microsoft.Extensions.Primitives;
-using System.Runtime.CompilerServices;
 using System.Text.Json;
 
 string Path = $"{Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData)}\\favorite-colors";
@@ -23,29 +21,41 @@ void InitData()
 
         using StreamReader sr = new(FullPath);
         string s = sr.ReadToEnd();
-        AllFriends = JsonSerializer.Deserialize<IEnumerable<Friend>>(s) ?? [];
+        if (!string.IsNullOrEmpty(s))
+        {
+            AllFriends = JsonSerializer.Deserialize<IEnumerable<Friend>>(s) ?? [];
+        }
     }
-    catch (Exception) { Console.WriteLine("Error loading friends."); AppEnd(); }
+    catch (Exception)
+    {
+        Console.WriteLine("Error loading friends.");
+        AppEnd();
+    }
 }
 void RunUI()
 {
     ShowIntro();
-    ShowMainMenu();
-    char menuSelection = PromptForMenuSelection();
-    GoToMenuSelection(menuSelection);
+    
+    char menuSelection = 'z';
+    while (!menuSelection.Equals('x') && !menuSelection.Equals('X'))
+    {
+        menuSelection = PromptForMenuSelection();
+        GoToMenuSelection(menuSelection);
+    }    
 
     void ShowIntro()
     {
-        string stars = Enumerable.Repeat('*', 30).ToString() ?? string.Empty;
+        string stars = new('*', count: 80);        
         string intro = "Welcome to Favorite Colors!!";
-        string desc = "This app makes it easy to keep track of the favorite colors of your friends!";
-        Console.WriteLine(stars);
+        string desc = "\nThis app makes it easy to keep track of the favorite colors of your friends!";
+        Console.WriteLine('\n' + stars);
         Console.WriteLine(intro);
         Console.WriteLine(desc);
         Console.WriteLine(stars);
     }
     void ShowMainMenu()
     {
+        Console.WriteLine("\n ***MAIN MENU***\n");
         Console.WriteLine("1) Search for friends");
         Console.WriteLine("2) Show all friends");
         Console.WriteLine("3) Add friend");
@@ -57,8 +67,9 @@ void RunUI()
         char userInput = '0';
         while (!validInputs.Contains(userInput))
         {
-            Console.WriteLine("Enter your menu selection, a digit between one(1) and three(3), or X to quit...");
-            ConsoleKeyInfo key = Console.ReadKey();
+            ShowMainMenu();
+            Console.WriteLine("\nEnter your menu selection, a digit between one(1) and three(3), or X to quit...");
+            ConsoleKeyInfo key = Console.ReadKey(intercept: true);
             userInput = key.KeyChar;
         }
         return userInput;
@@ -68,21 +79,17 @@ void RunUI()
         switch (selection)
         {
             case '1':
-                //search for friends
                 Console.WriteLine("Search for friends (coming soon)");
                 break;
             case '2':
-                //show all friends
                 Console.WriteLine("Show all friends (coming soon)");
                 break;
             case '3':
-                //add friend
                 Console.WriteLine("Add friend (coming soon)");
                 break;
             case 'x':
             case 'X':
-                AppEnd();
-                break;
+                return;
             default:
                 break;
         }
@@ -102,4 +109,3 @@ void AppEnd()
         catch (Exception) { Console.Write("Unknown error saving data."); return; }
     }
 }
-
