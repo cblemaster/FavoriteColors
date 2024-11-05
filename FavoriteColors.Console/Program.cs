@@ -189,8 +189,8 @@ void RunUI()
         {
             ConsoleColor c = Enum.GetValues<ConsoleColor>().SingleOrDefault(c => c.ToString().Equals(favColor, StringComparison.CurrentCultureIgnoreCase));
 
-            uint nextFriendId = AllFriends.Count > 0 ? AllFriends.Select(f => f.Id).Max() + 1 : 1;
-            AllFriends.Add(new() { Id = nextFriendId, FirstName = firstName, FavoriteColor = c });
+            int nextFriendId = AllFriends.Count > 0 ? AllFriends.Select(f => f.Id).Max() + 1 : 1;
+            AllFriends.Add(new() { Id = nextFriendId, FirstName = firstName, FavoriteColor = c.ToString() });
 
             Console.WriteLine("\nFriend added sucessfully!!");
         }
@@ -200,8 +200,11 @@ void RunUI()
             Console.Write("Favorite Color\n\n");
             foreach (Friend friend in friendsToDisplay)
             {
+                ConsoleColor c = Enum.GetValues<ConsoleColor>().SingleOrDefault(c => c.ToString().Equals(friend.FavoriteColor, StringComparison.CurrentCultureIgnoreCase));
                 Console.Write($"{friend.FirstName}\t\t");
+                Console.ForegroundColor = c;
                 Console.Write($"{friend.FavoriteColor}\n");
+                Console.ForegroundColor = ConsoleColor.White;
             }
         }
     }
@@ -212,11 +215,11 @@ void AppEnd()
     {
         try
         {
-            string fileContents = JsonSerializer.Serialize<List<Friend>>(AllFriends);
+            string jsonString = JsonSerializer.Serialize<List<Friend>>(AllFriends);
             using StreamWriter sw = new(FullPath, false);
-            sw.Write(fileContents);
-            Console.WriteLine("Data saved successfully!! Goodbye :\\)");
+            sw.Write(jsonString);
+            Console.WriteLine("\nData saved successfully!! Goodbye!!)");
         }
-        catch (Exception) { Console.Write("Unknown error saving data."); return; }
+        catch (Exception) { Console.Write("\nUnknown error saving data."); AppEnd(); } //TODO >> Is this a good idea? What is the right way to handle file write errors?
     }
 }
