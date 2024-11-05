@@ -11,4 +11,8 @@
     <PackageReference Include="Microsoft.Extensions.Hosting" Version="8.0.1" />
   </ItemGroup>
 
+  <ItemGroup>
+    <ProjectReference Include="..\FavoriteColors.Data\FavoriteColors.Data.csproj" />
+  </ItemGroup>
+
 </Project>
