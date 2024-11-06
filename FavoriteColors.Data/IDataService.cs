@@ -10,4 +10,7 @@ public interface IDataService
     void AddFriend(string firstName, string favColor);
     IEnumerable<Friend> GetAllFriends();
     IEnumerable<Friend> SearchFriends(string searchTerm);
+
+    bool TryLoadData();
+    bool TrySaveData();
 }
