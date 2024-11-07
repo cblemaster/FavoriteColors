@@ -17,9 +17,9 @@
 + Polyglot Notebooks extension for VS Code (for markdown and mermaid diagram documentation)
 ### Features
 + Select from menu to:
-++ Add friend
-++ See all friends
-++ Search for friends
++ Add friend
++ See all friends
++ Search for friends
 ### Business rules
 + Friend names must be between one(1) and fifteen(15) characters
 + Friend fav colors are limited to a list of fifteen(15) colors
