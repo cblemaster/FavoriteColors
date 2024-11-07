@@ -1,7 +1,7 @@
 ﻿
 namespace FavoriteColors.Data.Models;
 
-public class Friend
+public class FriendDTO
 {
     public int Id { get; set; }
     public string FirstName { get; set; } = string.Empty;
