@@ -5,10 +5,10 @@ namespace FavoriteColors.Data;
 
 public interface IDataService
 {
-    IEnumerable<FriendDTO> AllFriends { get; }
+    IEnumerable<Friend> AllFriends { get; }
     int GetIdForNewFriend();
     void AddFriend(string firstName, string favColor);
-    IEnumerable<FriendDTO> SearchFriends(string searchTerm);
+    IEnumerable<Friend> SearchFriends(string searchTerm);
 
     bool TryLoadData();
     bool TrySaveData();
