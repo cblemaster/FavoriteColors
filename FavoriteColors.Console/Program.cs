@@ -1,225 +1,124 @@
 ﻿
-using FavoriteColors.Console.Models;
-using System.Text.Json;
+using FavoriteColors.Console.Extensions;
+using FavoriteColors.Data;
+using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Hosting;
+using Consts = FavoriteColors.Console.UiConstants;
 
-string Path = $"{Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData)}\\favorite-colors";
-string FileName = "favorite-colors.txt";
-string FullPath = $"{Path}\\{FileName}";
+#region Configure services
+HostApplicationBuilder builder = Host.CreateApplicationBuilder(args);
+builder.Services.AddSingleton<IDataService, JsonDataService>();
+using IHost host = builder.Build();
+#endregion Configure services
 
-List<Friend> AllFriends = [];
+IDataService dataService = host.Services.GetService<IDataService>();
 
-InitData();
-RunUI();
-AppEnd();
+ShowIntro();
+LoadData(dataService);
+RunMenu();
+SaveData(dataService);
+ShowOutro();
 
-void InitData()
+static void ShowIntro()
 {
-    try
+    Consts.Stars.WriteToTerminal(0, 2);
+    Consts.INTRO_TEXT.WriteToTerminal(0, 2);
+    Consts.Stars.WriteToTerminal(0, 2);
+}
+static void ShowOutro() => Consts.APP_CLOSING_MESSAGE.WriteToTerminal(0, 2);
+static void LoadData(IDataService dataService)
+{
+    Consts.DATA_LOADING_MESSAGE.WriteToTerminal(0, 2);
+    if (dataService is null || !dataService.TryLoadData())
     {
-        if (!Directory.Exists(Path)) { Directory.CreateDirectory(Path); }
-        if (!File.Exists($"{Path}\\{FileName}")) { File.Create($"{Path}\\{FileName}"); }
-
-        using StreamReader sr = new(FullPath);
-        string s = sr.ReadToEnd();
-        if (!string.IsNullOrEmpty(s))
-        {
-            AllFriends = JsonSerializer.Deserialize<List<Friend>>(s) ?? [];
-        }
-    }
-    catch (Exception)
-    {
-        Console.WriteLine("Error: Unable to load friends.");
-        AppEnd();
+        Consts.DATA_LOAD_FAILURE_ERROR.WriteToTerminal(0, 2);
+        return;
     }
 }
-void RunUI()
+static void SaveData(IDataService dataService)
 {
-    ShowIntro();
-    char menuSelection = 'z';
-    while (!menuSelection.Equals('x') && !menuSelection.Equals('X'))
+    Consts.EXIT_SAVING_DATA_MESSAGE.WriteToTerminal(0, 2);
+    if (dataService is null || !dataService.TrySaveData())
     {
-        menuSelection = PromptForMenuSelection();
-        GoToMenuSelection(menuSelection);
+        Consts.EXIT_DATA_SAVE_ERROR.WriteToTerminal(0, 2);
     }
-    void ShowIntro()
+    else
     {
-        string stars = new('*', count: 80);
-        string intro = "Welcome to Favorite Colors!!";
-        string desc = "\nThis app makes it easy to keep track of the favorite colors of your friends!";
-        Console.WriteLine('\n' + stars);
-        Console.WriteLine(intro);
-        Console.WriteLine(desc);
-        Console.WriteLine(stars);
-        Console.WriteLine('\n');
+        Consts.EXIT_DATA_SAVE_SUCCESS_CONFIRMATION.WriteToTerminal(0, 2);
     }
-    void ShowMainMenu()
-    {
-        Console.WriteLine("\n ***MAIN MENU***\n");
-        Console.WriteLine("1) Add friend");
-        Console.WriteLine("2) See all friends");
-        Console.WriteLine("3) Search for friends");
-        Console.WriteLine("X) Quit");
-        Console.WriteLine('\n');
-    }
-    char PromptForMenuSelection()
-    {
-        char[] validInputs = ['1', '2', '3', 'x', 'X'];
-        char userInput = '0';
-        bool isFirstRun = true;
-        while (!validInputs.Contains(userInput))
-        {
-            if (!isFirstRun)
-            {
-                Console.WriteLine("\nError: Invalid menu selection.\n");
-            }
+    return;
+}
+static void RunMenu()
+{
+    ConsoleKey menuSelection = GetMenuSelection();
+    GoToMenuSelection(menuSelection);
 
-            ShowMainMenu();
-            Console.WriteLine("\nEnter your menu selection, a digit between one(1) and three(3), or X to quit...\n");
-            ConsoleKeyInfo key = Console.ReadKey();
-            userInput = key.KeyChar;
-            isFirstRun = false;
-        }
-        return userInput;
-    }
-    void GoToMenuSelection(char selection)
+    static ConsoleKey GetMenuSelection()
     {
-        switch (selection)
+        Consts.MENU_TEXT.WriteToTerminal(0, 2);
+        ConsoleKey[] validKeys = [ConsoleKey.D1, ConsoleKey.NumPad1, ConsoleKey.D2, ConsoleKey.NumPad2, ConsoleKey.D3, ConsoleKey.NumPad3, ConsoleKey.Escape];
+        ConsoleKey menuSelection = ConsoleKey.None;
+        string invalidMenuSelection = string.Empty;
+        while (!validKeys.Contains(menuSelection))
         {
-            case '1':
+            if (!string.IsNullOrWhiteSpace(invalidMenuSelection))
+            {
+                invalidMenuSelection.WriteToTerminal(1, 2);
+            }
+            invalidMenuSelection = Consts.MENU_OPTION_VALIDATION_ERROR;
+            Consts.MENU_OPTION_PROMPT.WriteToTerminal(0, 1);
+            menuSelection = Console.ReadKey().Key;
+        }
+        return menuSelection;
+    }
+    static void GoToMenuSelection(ConsoleKey menuSelection)
+    {
+        switch (menuSelection)
+        {
+            case ConsoleKey.Escape:
+                GoToExitProgram();
+                break;
+            case ConsoleKey.D1:
+            case ConsoleKey.NumPad1:
                 GoToAddFriend();
                 break;
-            case '2':
-                GoToSeeAllFriends();
+            case ConsoleKey.D2:
+            case ConsoleKey.NumPad2:
+                GoToAllFriends();
                 break;
-            case '3':
+            case ConsoleKey.NumPad3:
+            case ConsoleKey.D3:
                 GoToSearchForFriends();
                 break;
-            case 'x':
-            case 'X':
-                return;
             default:
                 break;
         }
-
-        void GoToAddFriend()
+        static void GoToAddFriend() { }
+        static void GoToAllFriends() { }
+        static void GoToSearchForFriends() { }
+        static void GoToExitProgram()
         {
-            string firstName = string.Empty;
-            bool isFirstRunName = true;
-            while (!IsValidFirstName(firstName))
+            ConsoleKey[] validKeys = [ConsoleKey.Y, ConsoleKey.N];
+            ConsoleKey confirmExitKey = ConsoleKey.None;
+            string invalidConfirmExit = string.Empty;
+            while (!validKeys.Contains(confirmExitKey))
             {
-                if (!isFirstRunName)
+                if (!string.IsNullOrEmpty(invalidConfirmExit))
                 {
-                    Console.WriteLine("\nError: first name input is invalid.\nFirst name must be between one(1) and one hundred(100) characters in length.");
+                    invalidConfirmExit.WriteToTerminal(1, 2);
                 }
-                Console.WriteLine("\nEnter friend's first name:\n");
-                firstName = Console.ReadLine() ?? string.Empty;
-                isFirstRunName = false;
+                invalidConfirmExit = Consts.EXIT_CONFIRM_EXIT_VALIDATION_ERROR;
+                Consts.EXIT_CONFIRM_EXIT_PROMPT.WriteToTerminal(0, 1);
+                confirmExitKey = Console.ReadKey().Key;
             }
-
-            string favColor = string.Empty;
-            bool isFirstRunColor = true;
-            while (!Enum.GetNames<ConsoleColor>().Select(c => c.ToLowerInvariant()).Contains(favColor.ToLowerInvariant()))
+            if (confirmExitKey.Equals(ConsoleKey.N))
             {
-                if (!isFirstRunColor)
-                {
-                    Console.WriteLine("\nError: color input is invalid.");
-                }
-                Console.WriteLine("\nWhat is your friend's favorite color? Choose from these colors:\n");
-                List<ConsoleColor> availableColors = new((ConsoleColor[])Enum.GetValues(typeof(ConsoleColor)));
-                availableColors.Remove(ConsoleColor.Black);
-
-                foreach (ConsoleColor color in availableColors)
-                {
-                    Console.ForegroundColor = color;
-                    Console.Write($"{color}\t");
-                    Console.Write('\n');
-                    Console.ForegroundColor = ConsoleColor.White;
-                }
-                favColor = Console.ReadLine() ?? string.Empty;
-                isFirstRunColor = false;
-            }
-
-            AddFriend(firstName, favColor);
-
-            bool IsValidFirstName(string firstName) => !string.IsNullOrWhiteSpace(firstName) && firstName.Length <= 100;
-        }
-        void GoToSearchForFriends()
-        {
-            string searchTerm = string.Empty;
-            bool isFirstRun = true;
-            while (!IsValidSearchTerm(searchTerm))
-            {
-                if (!isFirstRun)
-                {
-                    Console.WriteLine("\nError: Invalid search characters. Search characters must be fewer than one hundred(100).");
-                }
-                Console.WriteLine("\nEnter search characters:\n");
-                searchTerm = Console.ReadLine() ?? string.Empty;
-                isFirstRun = false;
-            }
-
-            Friend[] foundFriends = SearchFriends(searchTerm);
-            if (foundFriends.Length > 0)
-            {
-                Console.WriteLine("\nSEARCH RESULTS\n");
-                DisplayFriends(foundFriends);
+                RunMenu();
             }
             else
             {
-                Console.WriteLine($"\nUh oh! No friends matching search term '{searchTerm}' were found");
-            }
-            bool IsValidSearchTerm(string searchTerm) => !string.IsNullOrWhiteSpace(searchTerm) && searchTerm.Length <= 100;
-        }
-        void GoToSeeAllFriends()
-        {
-            if (AllFriends.Count > 0)
-            {
-                Console.WriteLine("\nALL FRIENDS\n");
-                DisplayFriends(GetAllFriends());
-            }
-            else
-            {
-                Console.WriteLine("\nUh oh! No friends found. Add some friends from the main menu!");
+                return;
             }
         }
-
-        Friend[] SearchFriends(string searchTerm) => GetAllFriends().Where(f => f.FirstName.Contains(searchTerm, StringComparison.CurrentCultureIgnoreCase)).ToArray();
-        Friend[] GetAllFriends() => [.. AllFriends.OrderBy(f => f.FirstName)];
-        void AddFriend(string firstName, string favColor)
-        {
-            ConsoleColor c = Enum.GetValues<ConsoleColor>().SingleOrDefault(c => c.ToString().Equals(favColor, StringComparison.CurrentCultureIgnoreCase));
-
-            int nextFriendId = AllFriends.Count > 0 ? AllFriends.Select(f => f.Id).Max() + 1 : 1;
-            AllFriends.Add(new() { Id = nextFriendId, FirstName = firstName, FavoriteColor = c.ToString() });
-
-            Console.WriteLine("\nFriend added sucessfully!!");
-        }
-        void DisplayFriends(IEnumerable<Friend> friendsToDisplay)
-        {
-            Console.Write("\n\nFirst Name\t");
-            Console.Write("Favorite Color\n\n");
-            foreach (Friend friend in friendsToDisplay)
-            {
-                ConsoleColor c = Enum.GetValues<ConsoleColor>().SingleOrDefault(c => c.ToString().Equals(friend.FavoriteColor, StringComparison.CurrentCultureIgnoreCase));
-                Console.Write($"{friend.FirstName}\t\t");
-                Console.ForegroundColor = c;
-                Console.Write($"{friend.FavoriteColor}\n");
-                Console.ForegroundColor = ConsoleColor.White;
-            }
-        }
-    }
-}
-void AppEnd()
-{
-    if (AllFriends.Count > 0)
-    {
-        try
-        {
-            string jsonString = JsonSerializer.Serialize<List<Friend>>(AllFriends);
-            using StreamWriter sw = new(FullPath, false);
-            sw.Write(jsonString);
-            Console.WriteLine("\nData saved successfully!! Goodbye!!)");
-        }
-        catch (Exception) { Console.Write("\nUnknown error saving data."); AppEnd(); } //TODO >> Is this a good idea? What is the right way to handle file write errors?
     }
 }
