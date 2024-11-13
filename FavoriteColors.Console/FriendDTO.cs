@@ -1,8 +1,4 @@
-﻿namespace FavoriteColors.Console;
+﻿
+namespace FavoriteColors.Console;
 
-public class FriendDTO
-{
-    public int Id { get; set; }
-    public string FirstName { get; set; } = string.Empty;
-    public string FavoriteColor { get; set; } = string.Empty;
-}
+public record FriendDTO(int Id, string FirstName, string FavoriteColor);
