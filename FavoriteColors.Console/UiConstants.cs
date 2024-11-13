@@ -11,7 +11,7 @@ internal static class UiConstants
     internal const string MENU_OPTION_PROMPT = "Please select one of these menu options:\n1 = Add friend\n2 = See all friends\n3 = Search for friends\n{esc} = Exit program";
     internal const string MENU_OPTION_VALIDATION_ERROR = "Error: Invalid menu option.";
     internal const string ADD_FRIEND_HEADER = "*** ADD FRIEND ***";
-    internal const string ADD_FRIEND_NAME_PROMPT = "Enter friend's first name:";
+    internal const string ADD_FRIEND_NAME_PROMPT = "Enter friend's first name, or {X} to return to menu:";
     internal const string ADD_FRIEND_TRIM_WHITESPACE_WARNING = "Warning: The name input has leading or trailing whitespace that will be trimmed off.";
     internal const string ADD_FRIEND_NAME_VALIDATION_ERROR = "Error: first name input is invalid.\nFirst name must be between one(1) and fifteen(15) characters in length.";
     internal const string ADD_FRIEND_FAV_COLOR_PROMPT = "What is your friend's favorite color? Choose from these colors:";
