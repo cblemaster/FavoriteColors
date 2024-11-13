@@ -1,5 +1,4 @@
-﻿
-namespace FavoriteColors.Console.Models;
+﻿namespace FavoriteColors.Console;
 
 public class FriendDTO
 {
