@@ -14,8 +14,7 @@ IDataService dataService = host.Services.GetService<IDataService>();
 
 ShowIntro();
 LoadData();
-Menu mainMenu = MenuFactory.GetMainMenu();
-mainMenu.Run();
+//run menu
 SaveData();
 ShowOutro();
 
