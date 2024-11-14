@@ -1,5 +1,4 @@
-﻿
-namespace FavoriteColors.Console;
+﻿namespace FavoriteColors.Console.Models;
 
 internal record Menu(
     string Title,

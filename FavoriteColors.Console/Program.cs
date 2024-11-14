@@ -1,10 +1,7 @@
 ﻿
-//using ConsoleMenus.UI;
-
-//Menu mainMenu = MenuFactory.GetMainMenu();
-//mainMenu.Run();
-
+using FavoriteColors.Console;
 using FavoriteColors.Console.Extensions;
+using FavoriteColors.Console.Models;
 using FavoriteColors.Data;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
@@ -17,7 +14,8 @@ IDataService dataService = host.Services.GetService<IDataService>();
 
 ShowIntro();
 LoadData();
-RunMenu();
+Menu mainMenu = MenuFactory.GetMainMenu();
+mainMenu.Run();
 SaveData();
 ShowOutro();
 
