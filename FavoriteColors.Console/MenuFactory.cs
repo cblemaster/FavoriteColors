@@ -5,7 +5,7 @@ namespace FavoriteColors.Console;
 
 internal static class MenuFactory
 {
-    internal static Menu GetMenu()
+    internal static Menu GetMainMenu()
     {
         string title = "<< MAIN MENU >>";
         string prompt = "Select a menu option:";
