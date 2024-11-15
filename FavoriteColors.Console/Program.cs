@@ -6,7 +6,7 @@ string Path = $"{Environment.GetFolderPath(Environment.SpecialFolder.LocalApplic
 string FileName = "favorite-colors.txt";
 string FullPath = $"{Path}\\{FileName}";
 
-List<Friend> AllFriends = [];
+List<FriendDTO> AllFriends = [];
 
 InitData();
 RunUI();
@@ -23,7 +23,7 @@ void InitData()
         string s = sr.ReadToEnd();
         if (!string.IsNullOrEmpty(s))
         {
-            AllFriends = JsonSerializer.Deserialize<List<Friend>>(s) ?? [];
+            AllFriends = JsonSerializer.Deserialize<List<FriendDTO>>(s) ?? [];
         }
     }
     catch (Exception)
@@ -158,7 +158,7 @@ void RunUI()
                 isFirstRun = false;
             }
 
-            Friend[] foundFriends = SearchFriends(searchTerm);
+            FriendDTO[] foundFriends = SearchFriends(searchTerm);
             if (foundFriends.Length > 0)
             {
                 Console.WriteLine("\nSEARCH RESULTS\n");
@@ -183,22 +183,22 @@ void RunUI()
             }
         }
 
-        Friend[] SearchFriends(string searchTerm) => GetAllFriends().Where(f => f.FirstName.Contains(searchTerm, StringComparison.CurrentCultureIgnoreCase)).ToArray();
-        Friend[] GetAllFriends() => [.. AllFriends.OrderBy(f => f.FirstName)];
+        FriendDTO[] SearchFriends(string searchTerm) => GetAllFriends().Where(f => f.FirstName.Contains(searchTerm, StringComparison.CurrentCultureIgnoreCase)).ToArray();
+        FriendDTO[] GetAllFriends() => [.. AllFriends.OrderBy(f => f.FirstName)];
         void AddFriend(string firstName, string favColor)
         {
             ConsoleColor c = Enum.GetValues<ConsoleColor>().SingleOrDefault(c => c.ToString().Equals(favColor, StringComparison.CurrentCultureIgnoreCase));
 
             int nextFriendId = AllFriends.Count > 0 ? AllFriends.Select(f => f.Id).Max() + 1 : 1;
-            AllFriends.Add(new() { Id = nextFriendId, FirstName = firstName, FavoriteColor = c.ToString() });
+            //AllFriends.Add(new() { Id = nextFriendId, FirstName = firstName, FavoriteColor = c.ToString() });
 
             Console.WriteLine("\nFriend added sucessfully!!");
         }
-        void DisplayFriends(IEnumerable<Friend> friendsToDisplay)
+        void DisplayFriends(IEnumerable<FriendDTO> friendsToDisplay)
         {
             Console.Write("\n\nFirst Name\t");
             Console.Write("Favorite Color\n\n");
-            foreach (Friend friend in friendsToDisplay)
+            foreach (FriendDTO friend in friendsToDisplay)
             {
                 ConsoleColor c = Enum.GetValues<ConsoleColor>().SingleOrDefault(c => c.ToString().Equals(friend.FavoriteColor, StringComparison.CurrentCultureIgnoreCase));
                 Console.Write($"{friend.FirstName}\t\t");
@@ -215,7 +215,7 @@ void AppEnd()
     {
         try
         {
-            string jsonString = JsonSerializer.Serialize<List<Friend>>(AllFriends);
+            string jsonString = JsonSerializer.Serialize<List<FriendDTO>>(AllFriends);
             using StreamWriter sw = new(FullPath, false);
             sw.Write(jsonString);
             Console.WriteLine("\nData saved successfully!! Goodbye!!)");
