@@ -1,9 +1,4 @@
 ﻿
-//using ConsoleMenus.UI;
-
-//Menu mainMenu = MenuFactory.GetMainMenu();
-//mainMenu.Run();
-
 using FavoriteColors.Console.Extensions;
 using FavoriteColors.Data;
 using Microsoft.Extensions.DependencyInjection;
