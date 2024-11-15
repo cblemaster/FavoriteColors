@@ -30,11 +30,11 @@ internal static class UiExtensions
     internal static bool IsValidConfirmExit(this char c) => Regex.IsMatch(c.ToString(), "[y,Y,n,N]");
     internal static bool HasLeadingOrTrailingWhiteSpace(this string s) => s.StartsWith(' ') || s.EndsWith(' ');
     internal static string ToTrimmedString(this string s) => s.Trim();
-    internal static void ToListOfFriends(this IEnumerable<FriendDTO> friends, string header)
+    internal static void ToListOfFriends(this IEnumerable<Friend> friends, string header)
     {
         WriteToTerminal(header, 0 , 2);
         WriteToTerminal("Friend name".PadRight(15) + '\t' + "Fav color", 0 , 1);
-        foreach (FriendDTO friend in friends)
+        foreach (Friend friend in friends)
         {
             WriteToTerminal(friend.FirstName);
             WriteToTerminal("\t");

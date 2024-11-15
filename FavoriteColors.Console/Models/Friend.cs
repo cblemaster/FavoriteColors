@@ -1,5 +1,5 @@
 ﻿
-namespace FavoriteColors.Data.Models;
+namespace FavoriteColors.Console.Models;
 
 public class Friend
 {
