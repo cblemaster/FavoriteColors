@@ -5,38 +5,39 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Consts = FavoriteColors.Console.UiConstants;
 
+#region Configure services
 HostApplicationBuilder builder = Host.CreateApplicationBuilder(args);
 builder.Services.AddSingleton<IDataService, JsonDataService>();
 using IHost host = builder.Build();
+#endregion Configure services
+
 IDataService dataService = host.Services.GetService<IDataService>();
 
 ShowIntro();
-LoadData();
+LoadData(dataService);
 RunMenu();
-SaveData();
+SaveData(dataService);
 ShowOutro();
 
-void ShowIntro()
+static void ShowIntro()
 {
     Consts.Stars.WriteToTerminal(0, 2);
     Consts.INTRO_TEXT.WriteToTerminal(0, 2);
     Consts.Stars.WriteToTerminal(0, 2);
 }
-void ShowOutro() => Consts.APP_CLOSING_MESSAGE.WriteToTerminal(0, 2);
-void LoadData()
+static void ShowOutro() => Consts.APP_CLOSING_MESSAGE.WriteToTerminal(0, 2);
+static void LoadData(IDataService dataService)
 {
     Consts.DATA_LOADING_MESSAGE.WriteToTerminal(0, 2);
-    
     if (dataService is null || !dataService.TryLoadData())
     {
         Consts.DATA_LOAD_FAILURE_ERROR.WriteToTerminal(0, 2);
         return;
     }
 }
-void SaveData()
+static void SaveData(IDataService dataService)
 {
     Consts.EXIT_SAVING_DATA_MESSAGE.WriteToTerminal(0, 2);
-
     if (dataService is null || !dataService.TrySaveData())
     {
         Consts.EXIT_DATA_SAVE_ERROR.WriteToTerminal(0, 2);
@@ -45,13 +46,14 @@ void SaveData()
     {
         Consts.EXIT_DATA_SAVE_SUCCESS_CONFIRMATION.WriteToTerminal(0, 2);
     }
+    return;
 }
-void RunMenu()
+static void RunMenu()
 {
     ConsoleKey menuSelection = GetMenuSelection();
     GoToMenuSelection(menuSelection);
 
-    ConsoleKey GetMenuSelection()
+    static ConsoleKey GetMenuSelection()
     {
         Consts.MENU_TEXT.WriteToTerminal(0, 2);
         ConsoleKey[] validKeys = [ConsoleKey.D1, ConsoleKey.NumPad1, ConsoleKey.D2, ConsoleKey.NumPad2, ConsoleKey.D3, ConsoleKey.NumPad3, ConsoleKey.Escape];
@@ -69,7 +71,7 @@ void RunMenu()
         }
         return menuSelection;
     }
-    void GoToMenuSelection(ConsoleKey menuSelection)
+    static void GoToMenuSelection(ConsoleKey menuSelection)
     {
         switch (menuSelection)
         {
@@ -91,46 +93,10 @@ void RunMenu()
             default:
                 break;
         }
-        void GoToAddFriend()
-        {
-            Consts.ADD_FRIEND_HEADER.WriteToTerminal(0, 2);
-            string name = string.Empty;
-            string invalidName = string.Empty;
-            while (!name.IsValidName())
-            {
-                if (!string.IsNullOrWhiteSpace(invalidName))
-                {
-                    invalidName.WriteToTerminal(1, 2);
-                }
-                invalidName = Consts.ADD_FRIEND_NAME_VALIDATION_ERROR;
-                Consts.ADD_FRIEND_NAME_PROMPT.WriteToTerminal(0, 1);
-                name = Console.ReadLine().Trim();
-            }
-
-            if (name.Equals("x", StringComparison.CurrentCultureIgnoreCase))
-            {
-                RunMenu();
-            }
-
-            string favColor = string.Empty;
-            string invalidFavColor = string.Empty;
-            while (!favColor.IsValidFavColor())
-            {
-                if (!string.IsNullOrWhiteSpace(invalidFavColor))
-                {
-                    invalidFavColor.WriteToTerminal(1, 2);
-                }
-                invalidFavColor = Consts.ADD_FRIEND_FAV_COLOR_VALIDATION_ERROR;
-                Consts.ADD_FRIEND_FAV_COLOR_PROMPT.WriteToTerminal(0, 1);
-                favColor = Console.ReadLine().Trim();
-            }
-
-            dataService.AddFriend(name, favColor);
-            Consts.ADD_FRIEND_SUCCESS_CONFIRMATION.WriteToTerminal(0, 2);
-        }
-        void GoToAllFriends() { }
-        void GoToSearchForFriends() { }
-        void GoToExitProgram()
+        static void GoToAddFriend() { }
+        static void GoToAllFriends() { }
+        static void GoToSearchForFriends() { }
+        static void GoToExitProgram()
         {
             ConsoleKey[] validKeys = [ConsoleKey.Y, ConsoleKey.N];
             ConsoleKey confirmExitKey = ConsoleKey.None;
