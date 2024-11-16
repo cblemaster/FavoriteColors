@@ -3,9 +3,7 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio Version 17
 VisualStudioVersion = 17.11.35327.3
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "FavoriteColors.Console", "FavoriteColors.Console\FavoriteColors.Console.csproj", "{F29BF30A-CCF9-489F-8A01-1CC6B25253AA}"
-EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "FavoriteColors.Data", "FavoriteColors.Data\FavoriteColors.Data.csproj", "{2E1EBC9A-91C0-4E0F-945F-9E3887B85C34}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "FavoriteColors.API", "FavoriteColors.API\FavoriteColors.API.csproj", "{498807DD-E3AA-4AFF-976C-133A1EE021A1}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -13,14 +11,10 @@ Global
 		Release|Any CPU = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(ProjectConfigurationPlatforms) = postSolution
-		{F29BF30A-CCF9-489F-8A01-1CC6B25253AA}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{F29BF30A-CCF9-489F-8A01-1CC6B25253AA}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{F29BF30A-CCF9-489F-8A01-1CC6B25253AA}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{F29BF30A-CCF9-489F-8A01-1CC6B25253AA}.Release|Any CPU.Build.0 = Release|Any CPU
-		{2E1EBC9A-91C0-4E0F-945F-9E3887B85C34}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{2E1EBC9A-91C0-4E0F-945F-9E3887B85C34}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{2E1EBC9A-91C0-4E0F-945F-9E3887B85C34}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{2E1EBC9A-91C0-4E0F-945F-9E3887B85C34}.Release|Any CPU.Build.0 = Release|Any CPU
+		{498807DD-E3AA-4AFF-976C-133A1EE021A1}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{498807DD-E3AA-4AFF-976C-133A1EE021A1}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{498807DD-E3AA-4AFF-976C-133A1EE021A1}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{498807DD-E3AA-4AFF-976C-133A1EE021A1}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
