@@ -3,13 +3,12 @@ using FavoriteColors.Data.Models;
 
 namespace FavoriteColors.Data;
 
-public interface IDataService
+interface IDataService
 {
-    IEnumerable<Friend> AllFriends { get; }
+    IReadOnlyCollection<Friend> AllFriends { get; }
     int GetIdForNewFriend();
     void AddFriend(string firstName, string favColor);
-    IEnumerable<Friend> SearchFriends(string searchTerm);
-
+    IReadOnlyCollection<Friend> SearchFriends(string searchTerm);
     bool TryLoadData();
     bool TrySaveData();
 }

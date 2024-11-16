@@ -1,9 +1,9 @@
 ﻿
 namespace FavoriteColors.Data.Models;
 
-public class Friend
+internal class Friend
 {
-    public int Id { get; set; }
-    public string FirstName { get; set; } = string.Empty;
-    public string FavoriteColor { get; set; } = string.Empty;
+    internal int Id { get; set; }
+    internal string FirstName { get; set; } = string.Empty;
+    internal string FavoriteColor { get; set; } = string.Empty;
 }

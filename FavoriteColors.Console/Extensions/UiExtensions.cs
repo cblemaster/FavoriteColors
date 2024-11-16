@@ -38,7 +38,7 @@ internal static class UiExtensions
         {
             WriteToTerminal(friend.FirstName);
             WriteToTerminal("\t");
-            ConsoleColor consoleColor = Enum.GetValues<ConsoleColor>().SingleOrDefault(c => c.ToString().Equals(friend.FavoriteColor, StringComparison.CurrentCultureIgnoreCase));
+            ConsoleColor consoleColor = Enum.GetValues<ConsoleColor>().SingleOrDefault(c => c.ToString().Equals(friend.FavoriteColor, StringComparison.InvariantCultureIgnoreCase));
             System.Console.ForegroundColor = consoleColor;
             WriteToTerminal(friend.FavoriteColor, 0, 1);
             System.Console.ForegroundColor = ConsoleColor.White;

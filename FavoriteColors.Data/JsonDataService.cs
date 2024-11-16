@@ -6,25 +6,24 @@ namespace FavoriteColors.Data;
 
 public class JsonDataService : IDataService
 {
-    private IEnumerable<Friend> _allFriends = [];
+    private List<Friend> _allFriends = [];
     private readonly string Path = $"{Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData)}\\favorite-colors";
     private readonly string FileName = "favorite-colors.txt";
     
     private string FullPath => $"{Path}\\{FileName}";
-    public IEnumerable<Friend> AllFriends => _allFriends.OrderBy(f => f.FirstName);
+    public IReadOnlyCollection<Friend> AllFriends => [.. _allFriends.OrderBy(f => f.FirstName).ToList()];
 
-    public int GetIdForNewFriend() => AllFriends.Any() ? AllFriends.Select(f => f.Id).Max() + 1 : 1;
-    public void AddFriend(string firstName, string favColor)
+    internal int GetIdForNewFriend() => AllFriends.Count == 0 ? 1 : AllFriends.Select(f => f.Id).Max() + 1;
+    internal void AddFriend(string firstName, string favColor)
     {
         //TODO >> Validation
-        ConsoleColor c = Enum.GetValues<ConsoleColor>().SingleOrDefault(c => c.ToString().Equals(favColor, StringComparison.CurrentCultureIgnoreCase));
+        ConsoleColor color = Enum.GetValues<ConsoleColor>().SingleOrDefault(c => c.ToString().Equals(favColor, StringComparison.InvariantCultureIgnoreCase));
         int nextFriendId = GetIdForNewFriend();
-        Friend newFriend = new() { Id = nextFriendId, FirstName = firstName, FavoriteColor = c.ToString() };
-
-        _ = _allFriends.Append(newFriend);
+        Friend newFriend = new() { Id = nextFriendId, FirstName = firstName, FavoriteColor = color.ToString() };
+        _allFriends.Add(newFriend);
     }
-    public IEnumerable<Friend> SearchFriends(string searchTerm) => AllFriends.Where(f => f.FirstName.Contains(searchTerm, StringComparison.CurrentCultureIgnoreCase));
-    public bool TryLoadData()
+    internal IEnumerable<Friend> SearchFriends(string searchTerm) => AllFriends.Where(f => f.FirstName.Contains(searchTerm, StringComparison.InvariantCultureIgnoreCase));
+    internal bool TryLoadData()
     {
         try
         {
@@ -43,15 +42,14 @@ public class JsonDataService : IDataService
             if (!string.IsNullOrEmpty(s))
             {
                 _allFriends = JsonSerializer.Deserialize<List<Friend>>(s) ?? [];
-                return true;
             }
             return true;
         }
         catch (IOException) { return false; }
     }
-    public bool TrySaveData()
+    internal bool TrySaveData()
     {
-        if (!_allFriends.Any()) { return true; }
+        if (_allFriends.Count == 0) { return true; }
         try
         {
             string jsonString = JsonSerializer.Serialize<IEnumerable<Friend>>(AllFriends);
