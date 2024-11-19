@@ -1,52 +1,82 @@
 ﻿
 namespace FavoriteColors.API.Services;
 
-internal class FileService : IFileService
+public class FileService : IFileService
 {
-    private readonly string _fileDir;
-    private readonly string _fullPath;
+    private readonly string _appDataPath = $"{Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData)}";
 
-    public FileService(string fileDir, string fullPath)
+    private string DirName { get; init; }
+    private string FileName { get; init; }
+
+    private string DirPath => Path.Combine(_appDataPath, DirName);
+    private string FilePath => Path.Combine(DirPath, FileName);
+
+    public FileService(string dir, string file)
     {
-        _fileDir = fileDir;
-        _fullPath = fullPath;
+        DirName = dir;
+        FileName = file;
 
-        CreateDirectoryIfNotExists();
-        CreateFileIfNotExists();
+        TryCreateDirectoryIfNotExists();
+        TryCreateFileIfNotExists();
     }
 
-    public void CreateDirectoryIfNotExists()
-    {
-        if (!Directory.Exists(_fileDir))
-        {
-            Directory.CreateDirectory(_fileDir);
-        }
-    }
-    public void CreateFileIfNotExists()
-    {
-        if (!File.Exists($"{_fullPath}"))
-        {
-            File.Create($"{_fullPath}");
-        }
-    }
-    public string TryReadFile()       // TODO>> think about more performant return type
+    public bool TryCreateDirectoryIfNotExists()
     {
         try
         {
-            using StreamReader sr = new(_fullPath);
-            string s = sr.ReadToEnd();
-            return s;
-        }
-        catch (IOException) { return "Error: Unable to read from data file!"; }
-    }
-    public bool TryWriteFile(string data)     // TODO>> think about input param with smaller footprint
-    {
-        try
-        {
-            using StreamWriter sw = new(_fullPath, false);
-            sw.Write(data);
+            if (!Directory.Exists(DirPath))
+            {
+                _ = Directory.CreateDirectory(DirPath);
+            }
             return true;
         }
-        catch (IOException) { return false; }
+        catch (IOException)
+        {
+            return false;
+            throw;
+        }
+    }
+    public bool TryCreateFileIfNotExists()
+    {
+        try
+        {
+            if (!File.Exists(FilePath))
+            {
+                using FileStream _ = File.Create(FilePath);
+            }
+            return true;
+        }
+        catch (IOException)
+        {
+            return false;
+            throw;
+        }
+    }
+    public string TryReadFile()
+    {
+        try
+        {
+            using StreamReader sr = new(FilePath);
+            return sr.ReadToEnd();
+        }
+        catch (IOException)
+        {
+            return string.Empty;
+            throw;
+        }
+    }
+    public bool TryWriteFile(string text)
+    {
+        try
+        {
+            using StreamWriter sw = new(FilePath, false);
+            sw.Write(text);
+            return true;
+        }
+        catch (IOException)
+        {
+            return false;
+            throw;
+        }
     }
 }

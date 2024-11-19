@@ -1,10 +1,9 @@
-﻿
-namespace FavoriteColors.API.Services;
+﻿namespace FavoriteColors.API.Services;
 
 public interface IFileService
 {
-    void CreateDirectoryIfNotExists();
-    void CreateFileIfNotExists();
+    bool TryCreateDirectoryIfNotExists();
+    bool TryCreateFileIfNotExists();
     string TryReadFile();
-    bool TryWriteFile(string data);
+    bool TryWriteFile(string text);
 }
