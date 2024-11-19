@@ -1,4 +1,5 @@
-﻿using FavoriteColors.API.Models;
+﻿
+using FavoriteColors.API.Models;
 using System.Text.Json;
 
 namespace FavoriteColors.API.Services
