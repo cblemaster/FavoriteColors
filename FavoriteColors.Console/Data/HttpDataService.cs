@@ -1,9 +1,8 @@
-﻿
-using FavoriteColors.Console.DataTransferObjects;
+﻿using FavoriteColors.App.Models;
 using System.Net.Http.Json;
 using System.Text.Json;
 
-namespace FavoriteColors.Console.Services;
+namespace FavoriteColors.App.Data;
 
 public class HttpDataService : IDataService
 {
@@ -12,7 +11,7 @@ public class HttpDataService : IDataService
 
     private ICollection<FriendDTO> _allFriends = [];
     private int NewFriendId => AllFriends.Select(f => f.FriendId).Max() + 1;
-    private ConsoleColor ColorFromString(string s) => ConsoleColor.GetValues<ConsoleColor>().SingleOrDefault(c => c.ToString().Equals(s, StringComparison.InvariantCultureIgnoreCase));
+    private ConsoleColor ColorFromString(string s) => Enum.GetValues<ConsoleColor>().SingleOrDefault(c => c.ToString().Equals(s, StringComparison.InvariantCultureIgnoreCase));
 
     public IReadOnlyCollection<FriendDTO> AllFriends => _allFriends.OrderBy(f => f.Name).ToList().AsReadOnly();
 

@@ -1,4 +1,3 @@
-﻿
-namespace FavoriteColors.Console.DataTransferObjects;
+﻿namespace FavoriteColors.App.Models;
 
 public record FriendDTO(int FriendId, string Name, ConsoleColor FavoriteColor);

@@ -1,7 +1,6 @@
-﻿
-using FavoriteColors.Console.DataTransferObjects;
+﻿using FavoriteColors.App.Models;
 
-namespace FavoriteColors.Console.Services
+namespace FavoriteColors.App.Data
 {
     public interface IDataService
     {

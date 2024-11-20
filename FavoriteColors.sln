@@ -5,7 +5,7 @@ VisualStudioVersion = 17.11.35327.3
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "FavoriteColors.API", "FavoriteColors.API\FavoriteColors.API.csproj", "{498807DD-E3AA-4AFF-976C-133A1EE021A1}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "FavoriteColors.Console", "FavoriteColors.Console\FavoriteColors.Console.csproj", "{ED15838E-878C-4766-B2B9-E9BB45EAF3E5}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "FavoriteColors.App", "FavoriteColors.Console\FavoriteColors.App.csproj", "{ED15838E-878C-4766-B2B9-E9BB45EAF3E5}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
