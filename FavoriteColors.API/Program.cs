@@ -1,5 +1,4 @@
 
-using FavoriteColors.API.Models;
 using FavoriteColors.API.Services;
 using Microsoft.AspNetCore.Http.HttpResults;
 
@@ -12,24 +11,15 @@ IConfigurationRoot configRoot = new ConfigurationBuilder()
 string _fileDir = configRoot.GetValue<string>("file_dir") ?? "Error retreiving file directory!";
 string _fileName = configRoot.GetValue<string>("file_name") ?? "Error retreiving file name!";
 
-builder.Services
-    .AddSingleton<IFileService>(new FileService(_fileDir, _fileName))
-    .AddSingleton<IJsonService, JsonService>();
+builder.Services.AddSingleton<IFileService>(new FileService(_fileDir, _fileName));
 
 WebApplication app = builder.Build();
 
 app.MapGet(pattern: "/", handler: () => "Welcome to Favorite Colors!");
-app.MapGet(pattern: "/read", handler: Ok<IEnumerable<Friend>> (IJsonService jsonService, IFileService fileService) =>
-{
-    IEnumerable<Friend> friends = jsonService.DeserializeJsonToCollection(fileService.TryReadFile());
-    return TypedResults.Ok(friends);
-});
-app.MapPost(pattern: "/write", handler: Results<ProblemHttpResult, Created> (IFileService fileService, IJsonService jsonService, IEnumerable<Friend> friends) =>
-{
-    string json = jsonService.SerializeCollectionToJson(friends);
-    return fileService.TryWriteFile(json)
+app.MapGet(pattern: "/read", handler: Ok<string> (IFileService fileService) => TypedResults.Ok(fileService.TryReadFile()));
+app.MapPost(pattern: "/write", handler: Results<ProblemHttpResult, Created> (IFileService fileService, string friends) =>
+    fileService.TryWriteFile(friends)
         ? TypedResults.Created()
-        : TypedResults.Problem("Error: an unknown error occurred while attempting to write to file.");
-});
+        : TypedResults.Problem("Error: an unknown error occurred while attempting to write to file."));
 
 app.Run();
