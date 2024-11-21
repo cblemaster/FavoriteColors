@@ -7,7 +7,7 @@ namespace FavoriteColors.App.Data;
 public static class FriendsData
 {
     private static IEnumerable<Friend> _allFriends = null!;
-    
+
     public static void AddFriend(string name, string favColor) => _allFriends.ToList().Add(new(NewFriendId, name, ColorFromString(favColor)));
     public static IReadOnlyCollection<Friend> AllFriends() => _allFriends.OrderBy(f => f.Name).ToList().AsReadOnly();
     public static IReadOnlyCollection<Friend> SearchFriends(string search) =>
