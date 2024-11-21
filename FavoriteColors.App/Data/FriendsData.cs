@@ -16,6 +16,7 @@ public static class FriendsData
     private static int NewFriendId => AllFriends().Select(f => f.FriendId).Max() + 1;
     private static ConsoleColor ColorFromString(string s) => Enum.GetValues<ConsoleColor>().SingleOrDefault(c => c.ToString().Equals(s, StringComparison.CurrentCultureIgnoreCase));
 
+    public static void SetAllFriends(IEnumerable<Friend> friends) => _allFriends = friends;
     public static string ToJson(IReadOnlyCollection<Friend> friends) => JsonSerializer.Serialize<IEnumerable<Friend>>(friends);
     public static IReadOnlyCollection<Friend> FromJson(string json) => JsonSerializer.Deserialize<IReadOnlyCollection<Friend>>(json) ?? [];
 }
