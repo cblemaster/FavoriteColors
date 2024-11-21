@@ -10,4 +10,8 @@ public record MenuDefinition
     string InputValidationError,
     ConsoleKey ExitKey,
     string ExitKeyString
-);
+)
+{
+    public IEnumerable<MenuOptionDefinition> MenuOptionDefinitions { get; private set; } = MenuOptionDefinitions;
+    public void SetMenuOptions(MenuOptionDefinition[] options) => MenuOptionDefinitions = options;
+}

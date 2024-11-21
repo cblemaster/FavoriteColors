@@ -11,4 +11,5 @@ public record MenuOptionDefinition
 {
     public Action MenuAction { get; private set; } = MenuAction;
     public void SetMenuAction(Action action) => MenuAction = action;
+    public override string ToString() => OptionLabel;
 }
