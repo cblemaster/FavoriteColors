@@ -1,27 +1,10 @@
 ﻿
 namespace FavoriteColors.App.Files;
 
-public class FileHandler
+public class FileHandler(string fullPath) : IFileHandler
 {
-    private readonly string _fileDir;
-    private readonly string _fullPath;
+    private readonly string _fullPath = fullPath;
 
-    public FileHandler(string fileDir, string fullPath)
-    {
-        _fileDir = fileDir;
-        _fullPath = fullPath;
-
-        CreateDirectoryIfNotExists();
-        CreateFileIfNotExists();
-    }
-
-    public void CreateDirectoryIfNotExists()
-    {
-        if (!Directory.Exists(_fileDir))
-        {
-            Directory.CreateDirectory(_fileDir);
-        }
-    }
     public string TryReadFile()
     {
         try
