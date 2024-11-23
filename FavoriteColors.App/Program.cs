@@ -45,7 +45,6 @@ void SetFriendsData(string json)
 {
     if (!string.IsNullOrWhiteSpace(json))
     {
-        // pass string to data.fromjson to set allfriends
         FriendsData.SetAllFriends(FriendsData.FromJson(json));
     }
 }
@@ -62,9 +61,9 @@ MenuDefinition CreateMenu()
 {
     MenuDefinition menu = new("=== MENU ===", [], [], "Select one of these options:", "Error: Invalid menu option selection.", ConsoleKey.Escape, "{esc} = Quit");
 
-    MenuOptionDefinition option1 = new(1, "1 = Add a friend", 1, [ConsoleKey.D1, ConsoleKey.NumPad1], () => FriendsData.AddFriend());
-    MenuOptionDefinition option2 = new(2, "2 = See all friends", 2, [ConsoleKey.D2, ConsoleKey.NumPad2], () => FriendsData.AllFriendsReadOnly.WriteToTerminal());
-    MenuOptionDefinition option3 = new(3, "3 = Search for friend", 3, [ConsoleKey.D3, ConsoleKey.NumPad3], () => FriendsData.SearchFriends());
+    MenuOptionDefinition option1 = new("1 = Add a friend", 1, [ConsoleKey.D1, ConsoleKey.NumPad1], () => AddFriend());
+    MenuOptionDefinition option2 = new("2 = See all friends", 2, [ConsoleKey.D2, ConsoleKey.NumPad2], () => FriendsData.AllFriendsReadOnly.WriteToTerminal());
+    MenuOptionDefinition option3 = new("3 = Search for friend", 3, [ConsoleKey.D3, ConsoleKey.NumPad3], () => SearchFriends());
     MenuOptionDefinition[] options = [option1, option2, option3];
 
     menu.SetMenuOptions(options);
@@ -113,10 +112,8 @@ void SaveData()
         string saveSuccess = "Data saved ";
         string saveFailure = "Error: Data not saved!\nPrinting data to screen...";
 
-        // pass allfriends to data.tojson
         json = FriendsData.ToJson(FriendsData.AllFriendsReadOnly);
 
-        // pass this string to file.writefile
         bool saveSucceeds = _fileHandler.TryWriteFile(json);
 
         if (!saveSucceeds)
@@ -134,4 +131,96 @@ void ShowOutro()
 {
     string outro = "Ending program...Goodbye!";
     outro.WriteToTerminal();
+}
+void AddFriend()
+{
+    string nameInput = string.Empty;
+    string favColorInput = string.Empty;
+
+    string namePrompt = "Enter friend's name, or X to return to the menu.";
+    string favColorPrompt = "Enter friend's favorite color, or X to return to the menu.";
+    string favColorOptions = "Choose from these colors:";
+
+    string nameValidationError = string.Empty;
+    string favColorValidationError = string.Empty;
+
+    while (string.IsNullOrWhiteSpace(nameInput) || nameInput.Length > 15)
+    {
+        if (!string.IsNullOrEmpty(nameValidationError))
+        {
+            nameValidationError.WriteToTerminal();
+        }
+        nameValidationError = "Error: Invalid friend name. Friend name must be between one(1) and fifteen (15) characters.";
+
+        namePrompt.WriteToTerminal();
+        nameInput = Console.ReadLine()?.Trim() ?? string.Empty;
+    }
+
+    if (nameInput.Equals("x", StringComparison.CurrentCultureIgnoreCase))
+    {
+        return;
+    }
+
+    string[] validColors = ConsoleColor.GetNames<ConsoleColor>().Where(c => c != ConsoleColor.Black.ToString()).ToArray();
+
+    bool favColorIsEmpty() => string.IsNullOrEmpty(favColorInput);
+    bool validColorsContainsFavColor() => validColors.Any(c => c.Equals(favColorInput, StringComparison.CurrentCultureIgnoreCase));
+    bool favColorIsX() => favColorInput.Equals("x", StringComparison.CurrentCultureIgnoreCase);
+
+    while ((favColorIsEmpty() || !validColorsContainsFavColor()) && !favColorIsX())
+    {
+        if (!string.IsNullOrEmpty(favColorValidationError))
+        {
+            favColorValidationError.WriteToTerminal();
+        }
+        favColorValidationError = "Error: Invalid color input.";
+
+        favColorPrompt.WriteToTerminal();
+        favColorOptions.WriteToTerminal();
+        ConsoleColor.GetValues<ConsoleColor>().Where(c => c != ConsoleColor.Black).ToList().ForEach(c =>
+        {
+            Console.ForegroundColor = c;
+            c.ToString().WriteToTerminal(0, 0);
+            Console.ForegroundColor = ConsoleColor.White;
+        });
+        favColorInput = Console.ReadLine()?.Trim() ?? string.Empty;
+    }
+
+    if (favColorInput.Equals("x", StringComparison.CurrentCultureIgnoreCase))
+    {
+        return;
+    }
+
+    string friendAdded = "Friend added sucessfully!";
+    FriendsData.AddFriend(new(NewFriendId(), nameInput, ColorFromString(favColorInput)));
+    friendAdded.WriteToTerminal();
+
+    uint NewFriendId() => FriendsData.AllFriendsReadOnly.Count > 0 ? FriendsData.AllFriendsReadOnly.Select(f => f.FriendId).Max() + 1 : 1;
+    ConsoleColor ColorFromString(string s) => ConsoleColor.GetValues<ConsoleColor>().SingleOrDefault(c => c.ToString().Equals(s, StringComparison.CurrentCultureIgnoreCase));
+}
+void SearchFriends()
+{
+    string input = string.Empty;
+
+    string prompt = "Enter search characters, or X to return to the menu.";
+    string validationError = string.Empty;
+
+    while (string.IsNullOrWhiteSpace(input) || input.Length > 15)
+    {
+        if (!string.IsNullOrEmpty(validationError))
+        {
+            validationError.WriteToTerminal();
+        }
+        validationError = "Error: Search characters are required and must be fifteen (15) or fewer.";
+
+        prompt.WriteToTerminal();
+        input = Console.ReadLine()?.Trim() ?? string.Empty;
+    }
+
+    if (input.Equals("x", StringComparison.CurrentCultureIgnoreCase))
+    {
+        return;
+    }
+
+    FriendsData.AllFriendsReadOnly.Where(f => f.Name.Contains(input)).WriteToTerminal();
 }
