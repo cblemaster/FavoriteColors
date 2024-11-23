@@ -1,7 +1,7 @@
 
 namespace FavoriteColors.App.Models;
 
-public record MenuDefinition
+internal record MenuDefinition
 (
     string Title,
     IEnumerable<MenuOptionDefinition> MenuOptionDefinitions,
@@ -12,6 +12,6 @@ public record MenuDefinition
     string ExitKeyString
 )
 {
-    public IEnumerable<MenuOptionDefinition> MenuOptionDefinitions { get; private set; } = MenuOptionDefinitions;
-    public void SetMenuOptions(MenuOptionDefinition[] options) => MenuOptionDefinitions = options;
+    internal IEnumerable<MenuOptionDefinition> MenuOptionDefinitions { get; private set; } = MenuOptionDefinitions;
+    internal void SetMenuOptions(MenuOptionDefinition[] options) => MenuOptionDefinitions = options;
 }
