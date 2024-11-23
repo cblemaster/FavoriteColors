@@ -27,7 +27,7 @@ public class FileHandler(string fileDir, string filePath) : IFileHandler
     {
         try
         {
-            DirectoryInfo di = Directory.CreateDirectory(_fileDir);
+            _ = Directory.CreateDirectory(_fileDir);
             using FileStream fs = File.Create(_filePath);
             fs.Dispose();
 
