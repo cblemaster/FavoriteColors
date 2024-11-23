@@ -1,7 +1,6 @@
 ## FavoriteColors
 ### About
 + An app for keeping track of the favorite colors of your friends
-+ Created to learn one alternative to relational dbs as the 'database layer'
 ### Learning objectives
 + Understand json stored to text file as a data source
 + Learn .NET classes involved with this
@@ -24,4 +23,4 @@
 + Friend fav colors are limited to a list of fifteen(15) console colors
 + Leading and trailing whitespace in friend name, fav color, and search term inputs are not allowed
 ### Improvement opportunities
-TBD
++ Keep up to date with current .NET version
