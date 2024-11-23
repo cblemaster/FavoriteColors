@@ -7,13 +7,11 @@ namespace FavoriteColors.App.Data;
 
 public static class FriendsData
 {
-    private static IEnumerable<Friend> _allFriends = [];
-
     public static void AddFriend()
     {
         string nameInput = string.Empty;
         string favColorInput = string.Empty;
-        
+
         string namePrompt = "Enter friend's name, or X to return to the menu.";
         string favColorPrompt = "Enter friend's favorite color, or X to return to the menu.";
         string favColorOptions = "Choose from these colors:";
@@ -21,7 +19,7 @@ public static class FriendsData
         string nameValidationError = string.Empty;
         string favColorValidationError = string.Empty;
 
-        while (string.IsNullOrWhiteSpace(nameInput))
+        while (string.IsNullOrWhiteSpace(nameInput) || nameInput.Length > 15)
         {
             if (!string.IsNullOrEmpty(nameValidationError))
             {
@@ -38,7 +36,13 @@ public static class FriendsData
             return;
         }
 
-        while (string.IsNullOrWhiteSpace(favColorInput))
+        string[] validColors = ConsoleColor.GetNames<ConsoleColor>().Where(c => c != ConsoleColor.Black.ToString()).ToArray();
+
+        bool favColorIsEmpty() => string.IsNullOrEmpty(favColorInput);
+        bool validColorsContainsFavColor() => validColors.Any(c => c.Equals(favColorInput, StringComparison.CurrentCultureIgnoreCase));
+        bool favColorIsX() => favColorInput.Equals("x", StringComparison.CurrentCultureIgnoreCase);
+
+        while ((favColorIsEmpty() || !validColorsContainsFavColor()) && !favColorIsX())
         {
             if (!string.IsNullOrEmpty(favColorValidationError))
             {
@@ -48,7 +52,12 @@ public static class FriendsData
 
             favColorPrompt.WriteToTerminal();
             favColorOptions.WriteToTerminal();
-            ConsoleColor.GetValues<ConsoleColor>().Where(c => c != ConsoleColor.Black).ToList().ForEach(c => c.ToString().WriteToTerminal());
+            ConsoleColor.GetValues<ConsoleColor>().Where(c => c != ConsoleColor.Black).ToList().ForEach(c =>
+            {
+                Console.ForegroundColor = c;
+                c.ToString().WriteToTerminal(0, 0);
+                Console.ForegroundColor = ConsoleColor.White;
+            });
             favColorInput = Console.ReadLine()?.Trim() ?? string.Empty;
         }
 
@@ -57,12 +66,13 @@ public static class FriendsData
             return;
         }
 
-        _allFriends.ToList().Add(new(NewFriendId, nameInput, ColorFromString(favColorInput)));
+        string friendAdded = "Friend added sucessfully!";
+        AllFriends.Add(new(NewFriendId, nameInput, ColorFromString(favColorInput)));
+        friendAdded.WriteToTerminal();
     }
 
-    public static IReadOnlyCollection<Friend> AllFriends() => _allFriends.OrderBy(f => f.Name).ToList().AsReadOnly();
-
-    //public static IReadOnlyCollection<Friend> SearchFriends()
+    public static IReadOnlyCollection<Friend> AllFriendsReadOnly => AllFriends.OrderBy(f => f.Name).ToList().AsReadOnly();
+    private static List<Friend> AllFriends { get; set; } = [];
     public static void SearchFriends()
     {
         string input = string.Empty;
@@ -70,7 +80,7 @@ public static class FriendsData
         string prompt = "Enter search characters, or X to return to the menu.";
         string validationError = string.Empty;
 
-        while (string.IsNullOrWhiteSpace(input))
+        while (string.IsNullOrWhiteSpace(input) || input.Length > 15)
         {
             if (!string.IsNullOrEmpty(validationError))
             {
@@ -87,13 +97,12 @@ public static class FriendsData
             return;
         }
 
-        _allFriends.Where(f => f.Name.Contains(input)).WriteToTerminal();
+        AllFriends.Where(f => f.Name.Contains(input)).WriteToTerminal();
     }
 
-    private static int NewFriendId => AllFriends().Select(f => f.FriendId).Max() + 1;
-    private static ConsoleColor ColorFromString(string s) => Enum.GetValues<ConsoleColor>().SingleOrDefault(c => c.ToString().Equals(s, StringComparison.CurrentCultureIgnoreCase));
-
-    public static void SetAllFriends(IEnumerable<Friend> friends) => _allFriends = friends;
+    private static uint NewFriendId => AllFriendsReadOnly.Count > 0 ? AllFriendsReadOnly.Select(f => f.FriendId).Max() + 1 : 1;
+    private static ConsoleColor ColorFromString(string s) => ConsoleColor.GetValues<ConsoleColor>().SingleOrDefault(c => c.ToString().Equals(s, StringComparison.CurrentCultureIgnoreCase));
+    public static void SetAllFriends(IEnumerable<Friend> friends) => AllFriends = friends.ToList();
     public static string ToJson(IReadOnlyCollection<Friend> friends) => JsonSerializer.Serialize<IEnumerable<Friend>>(friends);
     public static IReadOnlyCollection<Friend> FromJson(string json) => JsonSerializer.Deserialize<IReadOnlyCollection<Friend>>(json) ?? [];
 }

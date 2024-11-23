@@ -2,7 +2,7 @@
 
 public record MenuOptionDefinition
 (
-    int MenuOptionId,
+    uint MenuOptionId,
     string OptionLabel,
     int SortOrder,
     ConsoleKey[] SelectKeys,

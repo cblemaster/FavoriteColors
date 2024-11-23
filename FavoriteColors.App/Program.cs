@@ -9,11 +9,14 @@ using Microsoft.Extensions.Hosting;
 #region Strings
 const string FOLDER_NAME = "favorite-colors";
 const string FILE_NAME = "favorite-colors.txt";
-string path = $"{Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData)}\\{FOLDER_NAME}\\{FILE_NAME}";
+
+string appDataDir = $"{Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData)}";
+string fileDir = Path.Combine(appDataDir, FOLDER_NAME);
+string filePath = Path.Combine(fileDir, FILE_NAME);
 #endregion Strings
 
 HostApplicationBuilder builder = Host.CreateApplicationBuilder(args);
-builder.Services.AddSingleton<IFileHandler>(s => new FileHandler(path));
+builder.Services.AddSingleton<IFileHandler>(s => new FileHandler(fileDir, filePath));
 using IHost host = builder.Build();
 
 IFileHandler? _fileHandler = host.Services.GetService<IFileHandler>();
@@ -57,10 +60,10 @@ void ShowIntro()
 }
 MenuDefinition CreateMenu()
 {
-    MenuDefinition menu = new("=== MENU ===", [], [], "Select one of these menu options:", "Error: Invalid menu option selection.", ConsoleKey.Escape, "{esc} = Quit");
+    MenuDefinition menu = new("=== MENU ===", [], [], "Select one of these options:", "Error: Invalid menu option selection.", ConsoleKey.Escape, "{esc} = Quit");
 
     MenuOptionDefinition option1 = new(1, "1 = Add a friend", 1, [ConsoleKey.D1, ConsoleKey.NumPad1], () => FriendsData.AddFriend());
-    MenuOptionDefinition option2 = new(2, "2 = See all friends", 2, [ConsoleKey.D2, ConsoleKey.NumPad2], () => FriendsData.AllFriends().WriteToTerminal());
+    MenuOptionDefinition option2 = new(2, "2 = See all friends", 2, [ConsoleKey.D2, ConsoleKey.NumPad2], () => FriendsData.AllFriendsReadOnly.WriteToTerminal());
     MenuOptionDefinition option3 = new(3, "3 = Search for friend", 3, [ConsoleKey.D3, ConsoleKey.NumPad3], () => FriendsData.SearchFriends());
     MenuOptionDefinition[] options = [option1, option2, option3];
 
@@ -87,7 +90,7 @@ void RunMenu(MenuDefinition menu)
 
         menu.Prompt.WriteToTerminal();
 
-        menu.MenuOptionDefinitions.ToList().ForEach(o => o.ToString().WriteToTerminal());
+        menu.MenuOptionDefinitions.ToList().ForEach(o => o.ToString().WriteToTerminal(0, 0));
         menu.ExitKeyString.WriteToTerminal();
 
         selectedKey = Console.ReadKey().Key;
@@ -97,7 +100,7 @@ void RunMenu(MenuDefinition menu)
         return;
     }
 
-    menu.MenuOptionDefinitions.SingleOrDefault(optionDefinition => optionDefinition.SelectKeys.Contains(selectedKey))?.MenuAction();
+    menu.MenuOptionDefinitions.SingleOrDefault(o => o.SelectKeys.Contains(selectedKey))?.MenuAction();
     RunMenu(menu);
 }
 void SaveData()
@@ -105,13 +108,13 @@ void SaveData()
     string savingData = "Saving data...";
     savingData.WriteToTerminal();
 
-    if (FriendsData.AllFriends().Count > 0)
+    if (FriendsData.AllFriendsReadOnly.Count > 0)
     {
         string saveSuccess = "Data saved ";
         string saveFailure = "Error: Data not saved!\nPrinting data to screen...";
 
         // pass allfriends to data.tojson
-        json = FriendsData.ToJson(FriendsData.AllFriends());
+        json = FriendsData.ToJson(FriendsData.AllFriendsReadOnly);
 
         // pass this string to file.writefile
         bool saveSucceeds = _fileHandler.TryWriteFile(json);
@@ -119,7 +122,7 @@ void SaveData()
         if (!saveSucceeds)
         {
             saveFailure.WriteToTerminal();
-            FriendsData.AllFriends().WriteToTerminal();
+            FriendsData.AllFriendsReadOnly.WriteToTerminal();
         }
         else
         {

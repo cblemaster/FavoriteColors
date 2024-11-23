@@ -12,10 +12,15 @@ public static class IEnumerableExtensions
             string none = "No friends found!";
             none.WriteToTerminal();
         }
-        
-        string heading = "Friend name \tFavoriteColor";
 
-        heading.WriteToTerminal();
-        friends.ToList().ForEach(friend => friend.ToString().WriteToTerminal());
+        string heading = string.Format("{0, -15 } {1, -20 }", "Friend name", "FavoriteColor");
+
+        heading.WriteToTerminal(2, 1);
+        friends.ToList().ForEach(friend =>
+        {
+            Console.ForegroundColor = friend.FavoriteColor;
+            friend.ToString().WriteToTerminal(0, 0);
+            Console.ForegroundColor = ConsoleColor.White;
+        });
     }
 }

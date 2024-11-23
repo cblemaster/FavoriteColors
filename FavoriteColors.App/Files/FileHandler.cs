@@ -1,13 +1,14 @@
 ﻿
 namespace FavoriteColors.App.Files;
 
-public class FileHandler(string filePath) : IFileHandler
+public class FileHandler(string fileDir, string filePath) : IFileHandler
 {
+    private readonly string _fileDir = fileDir;
     private readonly string _filePath = filePath;
 
     public string TryReadFile()
     {
-        if (!Directory.Exists(_filePath))
+        if (!File.Exists(_filePath))
         {
             return string.Empty;
         }
@@ -26,6 +27,10 @@ public class FileHandler(string filePath) : IFileHandler
     {
         try
         {
+            DirectoryInfo di = Directory.CreateDirectory(_fileDir);
+            using FileStream fs = File.Create(_filePath);
+            fs.Dispose();
+
             using StreamWriter sw = new(_filePath, false);
             sw.Write(data);
             return true;
